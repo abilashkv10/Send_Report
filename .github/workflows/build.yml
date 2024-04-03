@@ -1,14 +1,23 @@
-name: Build
-
+---
+name: Github user and user commits
 on:
   push:
-    branches: main
-
+    branches:
+      - main
+      - dev_branch
+  pull_request:
+      branches:
+        - main
 jobs:
-  build:
+  fetching_user:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Hello World
-        run: echo Hello, world!
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Check Commit Message
+        id: check_commit
+        run: |
+           if git log --format=%B -n 1 ${{ github.sha }} | grep -q '[A-Z]'; then
+           echo "Error: Commit message contains uppercase letters."
+           exit 1
+           fi
